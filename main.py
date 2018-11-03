@@ -14,8 +14,26 @@ from help.authors import *
 from tkinter import filedialog as fd
 
 v = None
+file_name = ''
 firstFrame = None
 start_frame = None
+
+
+
+def insertText(radio3, v, text_hash):
+	global file_name
+
+	file_name = fd.askopenfilename()
+	list_name = file_name.split('/')
+	last_element = len(list_name) - 1
+	if file_name == '':
+		radio3.config(text = 'Your dictionary')
+	else:
+		fs = os.path.getsize(file_name)
+		if fs == 0:
+			radio3.config(text = 'Your dictionary')
+		else:
+			radio3.config(text = list_name[last_element])
 
 
 def main():
@@ -42,7 +60,7 @@ def main():
 	radio2 = Radiobutton(firstFrame, text = 'Mix dictionary', variable=v, value=2)
 	radio3 = Radiobutton(firstFrame, text = 'Your dictionary', variable=v, value=3, command = lambda : insertText(radio3, v, text_hash))
 
-	b2 = Button(firstFrame, text= 'Crack hash', command = lambda : check_args(v, text_hash))
+	b2 = Button(firstFrame, text= 'Crack hash', command = lambda : crack_hash(v, text_hash, label1, b2, file_name = file_name))
 
 	#<--Configs
 	label1.config(font = ('Arial', 15, 'bold'))

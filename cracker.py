@@ -3,39 +3,51 @@
 # -*- coding: utf-8 -*-
 
 #<--Import lib
+import hashlib
+import sys
 import os
 
 from ezprint import *
 from tkinter import *
 from main import *
 from tkinter import filedialog as fd
-	# f = open(file_name)
-	# s = f.read()
-	# f.close()
+		
+time = None
 
-def insertText(radio3, v, text_hash):
-	file_name = fd.askopenfilename()
-	list_name = file_name.split('/')
-	last_element = len(list_name) - 1
-	if file_name == '':
-		radio3.config(text = 'Your dictionary')
+
+def crack_hash(v, text_hash, label1, b2, file_name = ''):
+	hash_text = text_hash.get()
+	hash_text = hash_text.lstrip().rstrip()
+	if hash_text != '':
+		b2.config(state = DISABLED)
+		if v.get() == 1:
+			start_frame = threading.Thread(target= lambda : check_hash(text_hash, label1, b2, file_name = 'numbers.txt'))
+			start_frame.start()
+		elif v.get() == 2:
+			start_frame = threading.Thread(target= lambda : check_hash(text_hash, label1, b2, file_name = 'rockyou.txt'))
+			start_frame.start()
+		elif v.get() == 3:
+			start_frame = threading.Thread(target= lambda : check_hash(text_hash, label1, b2, file_name = file_name))
+			start_frame.start()
 	else:
-		fs = os.path.getsize(file_name)
-		if fs == 0:
-			radio3.config(text = 'Your dictionary')
-		else:
-			radio3.config(text = list_name[last_element])
-			check_args(v, text_hash)
+		label1.config(text='Input password!')
 
 
-def check_args(v, text_hash):
-	if v.get() == 1:
-		print('1')
-	elif v.get() == 2:
-		print('2')
-	elif v.get() == 3:
-		print('3')
-
-
-def crack_hash(v, text_hash):
-	pass
+def check_hash(text_hash, label1, b2, file_name = ''):
+	f = open(file_name, 'r')
+	haw = hashlib.md5()
+	our_hash = text_hash.get()
+	label1.config(text='Your password:')
+	for i in f:
+		password = i.lstrip().rstrip()
+		haw = str(hashlib.md5(password.encode("utf-8")).hexdigest())
+		text_hash.delete(0, END)
+		text_hash.insert(0, password)
+		if our_hash == haw:
+			b2.config(state = NORMAL)
+			break
+	else:
+		text_hash.delete(0, END)
+		label1.config(text='Password not found!')
+		b2.config(state = NORMAL)
+	f.close()
