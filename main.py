@@ -3,6 +3,10 @@
 # -*- coding: utf-8 -*-
 
 #<--Import lib
+import threading
+import time
+import os
+
 from ezprint import *
 from tkinter import *
 from cracker import *
@@ -10,24 +14,12 @@ from help.authors import *
 from tkinter import filedialog as fd
 
 v = None
-label2 = None
 firstFrame = None
-
-
-def insertText():
-	global label2
-
-	file_name = fd.askopenfilename()
-	list_name = file_name.split('/') 
-	f = open(file_name)
-	s = f.read()
-	f.close()
-	last_element = len(list_name) - 1
-	label2.config(text='Your dictionary: ' + list_name[last_element])
+start_frame = None
 
 
 def main():
-	global label2
+	global v
 	global firstFrame
 
 	#<--Settings for firstFrame
@@ -39,6 +31,8 @@ def main():
 
 	firstFrame.iconbitmap('docs/favicon.ico')
 
+	v = IntVar()
+	
 	#<--Elements
 	label1 = Label(firstFrame, text = 'Input hash: ', fg='black')
 
@@ -46,12 +40,9 @@ def main():
 
 	radio1 = Radiobutton(firstFrame, text = 'Number dictionary', variable=v, value=1)
 	radio2 = Radiobutton(firstFrame, text = 'Mix dictionary', variable=v, value=2)
+	radio3 = Radiobutton(firstFrame, text = 'Your dictionary', variable=v, value=3, command = lambda : insertText(radio3, v, text_hash))
 
-	label2 = Label(firstFrame, text = 'Your dictionary: ', fg='black')
-
-	b1 = Button(firstFrame, text= 'Open file ', command = insertText)
-
-	b2 = Button(firstFrame, text= 'Crack hash', command = crack_hash)
+	b2 = Button(firstFrame, text= 'Crack hash', command = lambda : check_args(v, text_hash))
 
 	#<--Configs
 	label1.config(font = ('Arial', 15, 'bold'))
@@ -60,10 +51,8 @@ def main():
 
 	radio1.config(fg = '#AA1D36')
 	radio2.config(fg = '#AA1D36')
+	radio3.config(fg = '#AA1D36')
 
-	label2.config(font = ('Arial', 15, 'bold'))
-
-	b1.config(font = ('Arial', 10, 'bold'))
 	b2.config(font = ('Arial', 10, 'bold'))
 
 	#<--Grids
@@ -73,11 +62,9 @@ def main():
 
 	radio1.grid(column = 1, row = 2)
 	radio2.grid(column = 1, row = 3)
+	radio3.grid(column = 1, row = 4)
 
-	label2.grid(column = 1, row = 4)
-
-	b1.grid(column = 1, row = 5, sticky=W)
-	b2.grid(column = 1, row = 5, sticky=E)
+	b2.grid(column = 1, row = 6)
 
 	radio1.select()
 
